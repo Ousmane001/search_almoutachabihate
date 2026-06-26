@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'UthmanicHafs';
+  src: url('/fonts/UthmanicHafs_v22.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-arabic: 'UthmanicHafs', 'Traditional Arabic', serif;
+
+  --color-cream: #faf3dc;
+  --color-cream-dark: #f0e5b8;
+  --color-app-bg: #faf7f0;
+  --color-primary: #1a6b3c;
+  --color-primary-dark: #1f5f38;
+  --color-primary-darker: #245c3f;
+  --color-primary-light: #2d8a52;
+  --color-gold: #c5962a;
+  --color-gold-light: #f0c040;
+  --color-ink: #1a1007;
+  --color-meta: #7a6343;
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-app-bg);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+[dir='rtl'] {
+  direction: rtl;
+}
