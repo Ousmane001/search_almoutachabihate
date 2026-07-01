@@ -1,4 +1,4 @@
-import type { ApiError, ApiSuccess } from './types'
+import type { ApiError, ApiSuccess, ApiSuccessWithMeta } from './types'
 
 // Vide par défaut : les requêtes passent par le proxy Vite (même origine HTTPS),
 // ce qui évite le blocage "contenu mixte" quand la page est servie en HTTPS
@@ -36,6 +36,32 @@ export async function apiGet<T>(path: string, params?: Record<string, string | n
   }
 
   return payload.data
+}
+
+export async function apiGetEnvelope<T>(
+  path: string,
+  params?: Record<string, string | number | undefined>,
+): Promise<{ data: T; meta?: Record<string, unknown> }> {
+  const url = new URL(`${API_BASE_URL}${path}`, window.location.origin)
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== '') url.searchParams.set(key, String(value))
+    }
+  }
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: 'application/json' },
+  })
+
+  const payload = (await response.json().catch(() => null)) as ApiSuccessWithMeta<T> | ApiError | null
+
+  if (!response.ok || !payload || payload.success === false || !('data' in payload)) {
+    const message = payload && 'message' in payload ? payload.message : `Erreur HTTP ${response.status}`
+    throw new ApiClientError(message, response.status)
+  }
+
+  return { data: payload.data, meta: payload.meta }
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {

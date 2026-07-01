@@ -3,6 +3,12 @@ export interface ApiSuccess<T> {
   data: T
 }
 
+export interface ApiSuccessWithMeta<T> {
+  success: true
+  data: T
+  meta?: Record<string, unknown>
+}
+
 export interface ApiError {
   success?: false
   error: string
@@ -39,6 +45,11 @@ export interface SearchResult {
   matchedWords: number[]
   nextAyahText: string | null
   words: SearchResultWord[]
+}
+
+export interface SearchResponse {
+  results: SearchResult[]
+  totalApproximate: number
 }
 
 export interface TranscriptionResult {

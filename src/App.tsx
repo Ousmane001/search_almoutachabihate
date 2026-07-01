@@ -9,6 +9,7 @@ import { isVoiceSearchSupported, VoiceSearchRecorder } from './services/voiceSea
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
+  const [resultCount, setResultCount] = useState<number | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
 
@@ -21,6 +22,7 @@ function App() {
     const trimmed = query.trim()
     if (trimmed.length < 2) {
       setResults([])
+      setResultCount(null)
       setSearchError(null)
       return
     }
@@ -31,8 +33,11 @@ function App() {
 
     const timer = setTimeout(() => {
       searchQuran(trimmed)
-        .then((data) => {
-          if (!cancelled) setResults(data)
+        .then((response) => {
+          if (!cancelled) {
+            setResults(response.results)
+            setResultCount(response.totalApproximate)
+          }
         })
         .catch((err: unknown) => {
           if (!cancelled) setSearchError(err instanceof ApiClientError ? err.message : 'Recherche indisponible')
@@ -112,6 +117,11 @@ function App() {
       </div>
 
       <div className="w-full max-w-2xl mt-6 flex flex-col gap-2">
+        {!isSearching && !searchError && query.trim().length >= 2 && resultCount !== null && (
+          <p className="text-center text-meta text-sm py-2">
+            {resultCount} occurrence{resultCount > 1 ? 's' : ''} trouvée{resultCount > 1 ? 's' : ''}
+          </p>
+        )}
         {isSearching && <p className="text-center text-meta text-sm py-4">Recherche en cours…</p>}
         {searchError && <p className="text-center text-red-700 text-sm py-4">{searchError}</p>}
         {!isSearching && !searchError && query.trim().length >= 2 && results.length === 0 && (

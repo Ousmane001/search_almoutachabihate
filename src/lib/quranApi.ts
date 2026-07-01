@@ -1,8 +1,12 @@
-import { apiGet, apiPost } from './apiClient'
-import type { SearchResult, TranscriptionResult } from './types'
+import { apiGetEnvelope, apiPost } from './apiClient'
+import type { SearchResponse, SearchResult, TranscriptionResult } from './types'
 
-export function searchQuran(query: string): Promise<SearchResult[]> {
-  return apiGet<SearchResult[]>('/v1/search', { q: query })
+export async function searchQuran(query: string): Promise<SearchResponse> {
+  const response = await apiGetEnvelope<SearchResult[]>('/v1/search', { q: query })
+  return {
+    results: response.data,
+    totalApproximate: typeof response.meta?.totalApproximate === 'number' ? response.meta.totalApproximate : response.data.length,
+  }
 }
 
 /**
